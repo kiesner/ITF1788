@@ -4,7 +4,7 @@
 #   Interval Test Framework for IEEE 1788 Standard for Interval Arithmetic
 #
 #
-#   Copyright 2014
+#   Copyright 2014-2015
 #
 #   Marco Nehmeier (nehmeier@informatik.uni-wuerzburg.de)
 #   Maximilian Kiesner (maximilian.kiesner@stud-mail.uni-wuerzburg.de)
@@ -25,12 +25,18 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+# This is the arithmetic definition for the GNU Octave interval package
+# http://octave.sourceforge.net/interval/
+
 imports: |
+    %!function n = decval (dec)
+    %!    n = find (strcmp (dec, {"ill", "trv", "def", "dac", "com"}));
+    %!endfunction
 preamble: |
 
 # intervals
-nai_interval_double: infsupdec ("ill")
-empty_interval_double: infsup ()
+nai_interval_double: nai
+empty_interval_double: infsup
 entire_interval_double: infsup (-inf, inf)
 decorated_empty_interval_double: infsupdec (empty, $DEC)
 decorated_entire_interval_double: infsupdec (entire, $DEC)
@@ -47,6 +53,8 @@ decorator_trv: '"trv"'
 # comparison operators for decorations
 decorator_less_equals: decval ($ARG1) <= decval ($ARG2)
 decorator_greater_equals: decval ($ARG1) >= decval ($ARG2)
+
+op_decorationPart*: decorationpart ($ARG1) {1}
 
 # overlap literal translations
 overlap_bothEmpty: '"bothEmpty"'
@@ -71,12 +79,14 @@ op_cancelMinus*: cancelminus ($ARG1, $ARG2)
 op_cancelPlus*: cancelplus ($ARG1, $ARG2)
 
 # Set operations
-op_intersection*: and ($ARG1, $ARG2)
-op_convexHull*: or ($ARG1, $ARG2)
+op_intersection*: intersect ($ARG1, $ARG2)
+op_convexHull*: union ($ARG1, $ARG2)
 
 # Constructors
 op_numsToInterval*: infsup ($ARG1, $ARG2)
 op_textToInterval*: infsupdec ($ARG1)
+op_setDec*: infsupdec ($ARG1, $ARG2)
+op_newDec*: newdec ($ARG1)
 
 # Basic operations
 op_pos*: |
@@ -99,7 +109,7 @@ op_div*: |
     rdivide ($ARG1, $ARG2)
 op_recip*: inv ($ARG1)
 op_sqr*: sqr ($ARG1)
-op_sqrt*: sqrt ($ARG1)
+op_sqrt*: realsqrt ($ARG1)
 op_fma*: fma ($ARG1, $ARG2, $ARG3)
 
 # Power functions
@@ -202,5 +212,31 @@ op_mulRevToPair*: |
     *** next output
     nthargout(2, 2, @mulrev, $ARG1, $ARG2)
 
-op_decorationPart*: decorationpart ($ARG1) {1}
-op_setDec*: setdec ($ARG1, $ARG2)
+# Recommended forward-mode elementary functions
+op_rootn*: nthroot ($ARG1, $ARG2)
+op_expm1*: expm1 ($ARG1)
+op_logp1*: log1p ($ARG1)
+op_hypot*: hypot ($ARG1, $ARG2)
+op_rSqrt*: rsqrt ($ARG1)
+
+# Reduction operations
+op_dot_down*: mpfr_vector_dot_d (-inf, $ARG1, $ARG2)
+op_dot_up*: mpfr_vector_dot_d (inf, $ARG1, $ARG2)
+op_dot_zero*: mpfr_vector_dot_d (0, $ARG1, $ARG2)
+op_dot_nearest*: mpfr_vector_dot_d (0.5, $ARG1, $ARG2)
+
+op_sum_down*: mpfr_vector_sum_d (-inf, $ARG1)
+op_sum_up*: mpfr_vector_sum_d (inf, $ARG1)
+op_sum_zero*: mpfr_vector_sum_d (0, $ARG1)
+op_sum_nearest*: mpfr_vector_sum_d (0.5, $ARG1)
+
+op_sum_abs_down*: mpfr_vector_sum_d (-inf, abs ($ARG1))
+op_sum_abs_up*: mpfr_vector_sum_d (inf, abs ($ARG1))
+op_sum_abs_zero*: mpfr_vector_sum_d (0, abs ($ARG1))
+op_sum_abs_nearest*: mpfr_vector_sum_d (0.5, abs ($ARG1))
+
+op_sum_sqr_down*: mpfr_vector_dot_d (-inf, $ARG1, $ARG1)
+op_sum_sqr_up*: mpfr_vector_dot_d (inf, $ARG1, $ARG1)
+op_sum_sqr_zero*: mpfr_vector_dot_d (0, $ARG1, $ARG1)
+op_sum_sqr_nearest*: mpfr_vector_dot_d (0.5, $ARG1, $ARG1)
+

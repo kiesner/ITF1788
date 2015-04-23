@@ -4,7 +4,7 @@
 #   Interval Test Framework for IEEE 1788 Standard for Interval Arithmetic
 #
 #
-#   Copyright 2014
+#   Copyright 2014-2015
 #
 #   Marco Nehmeier (nehmeier@informatik.uni-wuerzburg.de)
 #   Maximilian Kiesner (maximilian.kiesner@stud-mail.uni-wuerzburg.de)
@@ -31,42 +31,38 @@ imports: |
     %!        s = num2str (x);
     %!    elseif (isa (x, 'infsup'))
     %!        s = intervaltotext (x);
+    %!    elseif (isa (x, 'intval'))
+    %!        s = disp_ (x);
     %!    else
     %!        # x probably is a char.
     %!        s = x;
     %!    endif
     %!endfunction
-    %
-    %!function n = decval (dec)
-    %! n = find (strcmp (dec, {"ill", "trv", "def", "dac", "com"}));
+    %!
+    %!function assert_warn (expected, actual)
+    %!    if (not (all (eq (expected, actual))))
+    %!        warning (["expected: ", to_string(expected), " actual value: ", to_string(actual)]);
+    %!    endif
     %!endfunction
 testfile_seq: |
     $COMMENTS
-    %!shared
-    %!  ## Disable warnings when creating NaIs
-    %!  warning ("off", "interval:NaI")
     $TESTLIB_IMPORTS
+    $ARITHLIB_IMPORTS
+    $PREAMBLE
     $TESTCASES
-    %!shared
-    %!  ## Re-Enable warnings when creating NaIs
-    %!  warning ("on", "interval:NaI")
 testcase_seq: |
+    ## $TC_NAME
     $COMMENTS
-    %!test "$TC_NAME";
     $TESTS
 test_seq: |
     $COMMENTS
-    $ASSERTS    
+    %!test
+    $ASSERTS
 
 # assert (X, Y) does not work with custom types
-# assert (X == Y) may fail when comparing decorated intervals with bare intervals, see #42735
+# assert (X == Y) may fail when comparing decorated intervals with bare intervals, see bug #42735
 # assert (eq (X, Y)) fails if X and Y are strings of different length
-assert_equals: |
-    %! assert (all (eq (...
-    %!    $ARG1, ...
-    %!    $ARG2)))
-assert_equals_warning: |
-    %! if (not (all (eq ($ARG1, $ARG2))))
-    %!     warning (["expected: ", to_string($ARG1), " actual value: ", to_string($ARG2)]);
-    %! endif
+# assert (isequal (X, Y)) fails for interval matrices, see bug #44334
+assert_equals: "%! assert (all (eq ($ARG1, $ARG2)))"
+assert_equals_warning: "%! assert_warn ($ARG1, $ARG2)"
 assert_true: "%! assert ($ARG1)"

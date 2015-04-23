@@ -109,6 +109,8 @@ op_convexHull*: hull($ARG1, $ARG2)
 # Constructors
 op_numsToInterval*:
 op_textToInterval*: text_to_interval($ARG1)
+op_setDec*: set_dec($ARG1, $ARG2)
+op_newDec*:
 
 # Basic operations
 op_pos*: |
@@ -229,7 +231,6 @@ op_mulRevToPair*: |
 
 op_overlap*: overlap($ARG1, $ARG2)
 op_decorationPart*: decoration(${ARG1})
-op_setDec*: set_dec($ARG1, $ARG2)
 
 op_dot_down*: dot($ARG1, $ARG1 + $ARG1_LEN, $ARG2, p1788::reduction::rnd_mode::downward)
 op_dot_up*: dot($ARG1, $ARG1 + $ARG1_LEN, $ARG2, p1788::reduction::rnd_mode::upward)
@@ -250,3 +251,4 @@ op_sum_sqr_down*: sum_sqr($ARG1, $ARG1 + $ARG1_LEN, $ARG2, p1788::reduction::rnd
 op_sum_sqr_up*: sum_sqr($ARG1, $ARG1 + $ARG1_LEN, $ARG2, p1788::reduction::rnd_mode::upward)
 op_sum_sqr_zero*: sum_sqr($ARG1, $ARG1 + $ARG1_LEN, $ARG2, p1788::reduction::rnd_mode::to_zero)
 op_sum_sqr_nearest*: sum_sqr($ARG1, $ARG1 + $ARG1_LEN, $ARG2, p1788::reduction::rnd_mode::to_nearest)
+

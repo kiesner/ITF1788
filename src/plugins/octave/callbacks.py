@@ -24,9 +24,11 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
    
-#strip suffix
 def cb_fpNum(val):
     import re
     if re.match("[+-]?(0x|0X)([0-9a-fA-F])+(UL?|U(LL)|(LL)U?|LU?)?", val):
-        return '"' + val + '"' 
+        # Hexadecimal floating-point form is not supported by GNU Octave
+        # 18 decimal digits are enough to define the binary64 number
+        fp_number = float.fromhex(val);
+        return "%.18e" % fp_number
     return val
